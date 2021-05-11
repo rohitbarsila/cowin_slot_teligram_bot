@@ -2,8 +2,8 @@ import requests
 from django.conf import settings
 from django.db import models
 
+
 # Create your models here.
-from django.forms import JSONField
 
 
 class Teligram_User(models.Model):
@@ -11,20 +11,15 @@ class Teligram_User(models.Model):
     name = models.CharField(max_length=50)
     username = models.CharField(max_length=100)
     account_type = models.CharField(max_length=20)
-
+    can_add = models.BooleanField(default=True)
+    can_delete = models.BooleanField(default=False)
+    deregister = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return str(self.telegram_id)
 
-    def validate_data(self):
-        try:
-            if self.user_subscription_data.get().pincode.pincode and not self.user_subscription_data.get().can_modify:
-                return True
-        except (User_Subscription_Data.DoesNotExist, AttributeError):
-            return False
-        return False
 
 
 class Pincode(models.Model):
@@ -44,6 +39,7 @@ class Pincode(models.Model):
             f"{settings.TELEGRAMBOT_URL}{settings.TELEGRAMBOT_TOKEN}/sendMessage", data=data
         )
         return True
+
     def __str__(self):
         return str(self.pincode)
 
@@ -51,10 +47,14 @@ class Pincode(models.Model):
 class User_Subscription_Data(models.Model):
     message_id = models.IntegerField(unique=True, db_index=True)
     user = models.ForeignKey(Teligram_User, on_delete=models.CASCADE, related_name="user_subscription_data")
-    pincode = models.ForeignKey(Pincode, on_delete=models.CASCADE, related_name="user_subscription_data", null=True ,blank=True)
-    can_modify = models.BooleanField(default=False)
+    pincode = models.ForeignKey(Pincode, on_delete=models.CASCADE, related_name="user_subscription_data", null=True,
+                                blank=True)
+    
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return str(self.message_id)
+
+    class Meta:
+        unique_together = ('user', 'pincode',)
