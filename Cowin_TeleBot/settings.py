@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 from pathlib import Path
 
-from decouple import config
+# from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,10 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: don't run with debug turned on in production!
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY')
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', cast=bool)
+SECRET_KEY = '%)5w1e=0^#v=ph5$911rwj&w5l421wa#r2hgw(%)!vp#)^hkzv'
+TELEGRAMBOT_TOKEN = '1844918112:AAFrIzMAl9WUgN8YbcgmFIlQVag4EiEl50c'
+DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
@@ -124,7 +123,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 TELEGRAMBOT_URL = "https://api.telegram.org/bot"
-TELEGRAMBOT_TOKEN = config('TELEGRAMBOT_TOKEN')
 
 CELERY_BROKER_URL = 'amqp://guest:guest@localhost:5672//'
 

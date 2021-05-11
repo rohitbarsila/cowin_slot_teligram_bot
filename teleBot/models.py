@@ -30,7 +30,6 @@ class Teligram_User(models.Model):
 class Pincode(models.Model):
     pincode = models.IntegerField(blank=True, null=True)
     slot_status = models.BooleanField(default=False)
-    raw = JSONField()
 
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
@@ -52,7 +51,7 @@ class Pincode(models.Model):
 class User_Subscription_Data(models.Model):
     message_id = models.IntegerField(unique=True, db_index=True)
     user = models.ForeignKey(Teligram_User, on_delete=models.CASCADE, related_name="user_subscription_data")
-    pincode = models.ForeignKey(Pincode, on_delete=models.CASCADE, related_name="user_subscription_data", null=True)
+    pincode = models.ForeignKey(Pincode, on_delete=models.CASCADE, related_name="user_subscription_data", null=True ,blank=True)
     can_modify = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)

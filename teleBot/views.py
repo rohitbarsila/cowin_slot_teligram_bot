@@ -16,8 +16,11 @@ class WebHook(View):
 
     def post(self, request, *args, **kwargs):
         t_data = json.loads(request.body)
-        t_message = t_data["message"]
-        t_chat = t_message["chat"]
+        try:
+          t_message = t_data["message"]
+          t_chat = t_message["chat"]
+        except :
+          pass
 
         try:
             text = t_message["text"].strip().lower()
@@ -40,7 +43,7 @@ class WebHook(View):
             t_user = Teligram_User()
             t_user.telegram_id = t_chat["id"]
             t_user.name = t_chat["first_name"]
-            t_user.username = t_chat["username"]
+            t_user.username = t_chat["first_name"]+" "+t_chat["last_name"]
             t_user.account_type = t_chat["type"]
             t_user.save()
 
@@ -53,7 +56,7 @@ class WebHook(View):
 
         elif text == "register":
             try:
-                u_data = User_Subscription_Data.objects.filter(user__telegram_id=t_chat["id"])
+                u_data = User_Subscription_Data.objects.get(user__telegram_id=t_chat["id"])
             except User_Subscription_Data.DoesNotExist:
                 u_data = User_Subscription_Data()
                 u_data.message_id = t_message["message_id"]
@@ -68,10 +71,15 @@ class WebHook(View):
                 pincode = Pincode()
                 pincode.pincode = int(text)
                 pincode.save()
-            u_data = user.user_subscription_data.get()
-            u_data.can_modify = False
-            u_data.pincode = pincode
-            u_data.save()
+            try:
+              u_data = User_Subscription_Data.objects.get(user__telegram_id=t_chat["id"])
+              u_data.can_modify = False
+              u_data.pincode = pincode
+              u_data.save()
+            except User_Subscription_Data.DoesNotExist:
+              self.send_message("Some Issue Please Register Again\n if not solving connect @rohitbarsila",
+                              t_chat["id"])
+            
             self.send_message("You Had Subscribed to ***%s*** \n we will let you know once slots available " % text,
                               t_chat["id"])
 
