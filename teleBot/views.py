@@ -19,8 +19,8 @@ class WebHook(View):
         try:
           t_message = t_data["message"]
           t_chat = t_message["chat"]
-        except :
-          pass
+        except KeyError:
+          return JsonResponse({"status": "POST request Failed"})
 
         try:
             text = t_message["text"].strip().lower()
@@ -43,7 +43,10 @@ class WebHook(View):
             t_user = Teligram_User()
             t_user.telegram_id = t_chat["id"]
             t_user.name = t_chat["first_name"]
-            t_user.username = t_chat["first_name"]+" "+t_chat["last_name"]
+            try:
+              t_user.username = t_chat["first_name"]+" "+t_chat["last_name"]
+            except KeyError:
+              t_user.username = t_chat["first_name"]
             t_user.account_type = t_chat["type"]
             t_user.save()
 
